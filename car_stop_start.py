@@ -1,5 +1,5 @@
 user_type = ""
-while user_type != 'quit':
+while true:
     user_type = input('>').lower()
    
          
@@ -13,6 +13,8 @@ while user_type != 'quit':
         stop - to stop the car
         quit - to quit
         """)
+    elif user_type == 'quit':
+        break
     else:
         print("Sorry I don't understand that..")
     
