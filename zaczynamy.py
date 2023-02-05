@@ -23,3 +23,29 @@
 #wiado = f'{imie} [{nazwisko}] jest programista'
 # print(wiadomosc)
 # print(wiado)
+#kurs = 'python dla poczatkujacych'
+#print(kurs.replace('p', 'n'))
+#print('python' in kurs)
+# len()
+# print(kurs.upper())
+# print(kurs.lower())
+# print(kurs.title())
+# print(kurs.find('p'))
+# print(kurs.replace())
+
+# operacje arytmetyczne (Arithmetical Operations)
+# print(10 + 3)  # addition
+# print(10 - 3)  # subtraction
+# print(10 * 3)  # multiplication
+# print(10 / 3)  # division1
+# print(10 // 3)  # division2 only intiger
+# print(10 % 3)  # modulis returns remainder of the devision
+# print(10 ** 3)  # power
+
+# funkcje matematyczne (math function)
+#import math
+# print(math.ceil(2.9))
+# print(math.floor(2.9))
+#x = 2.9
+# print(round(x))  # =3
+# print(abs(-2.9))  # = 2.9
