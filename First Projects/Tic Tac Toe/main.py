@@ -7,6 +7,7 @@ height = 600
 window = pygame.display.set_mode((width, height))
 background_color = (192, 168, 132)
 window.fill(background_color)
+pygame.display.set_caption("Kółko krzyżyk")
 
 
 def drawning_text():
@@ -35,6 +36,16 @@ def drawning_field():
             pygame.draw.rect(window, field_color, cell_react, width=1)
 
 
+def write_symbol(point, rect):
+    x, y = point
+    rx, ry, height, width = rect
+    return rx < x < rx + width and ry < y < ry + height
+
+
+button_rect = (150, 150, 100, 100)
+button_state = "Pusty"
+
+
 running = True
 while running:
 
@@ -44,5 +55,18 @@ while running:
         drawning_text()
         drawning_field()
         pygame.display.flip()
+
+        pygame.draw.rect(window, (200, 200, 200), button_rect)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_position = pygame.mouse.get_pos()
+            if write_symbol(mouse_position, button_rect):
+                button_state = "kółko"
+
+        if button_state == "kółko":
+            pygame.draw.circle(window, (0, 0, 0), (250, 300), 40)
+
+        if button_state == "krzyżyk":
+            pygame.draw.lines(window, (0, 0, 0), (200, 200), 50)
 
 pygame.quit()
