@@ -21,16 +21,18 @@ def drawning_text():
 
 
 def drawning_field():
-    cell_position = (250, 200)
     cell_size = 100
+    field_center = 250
+    field_color = (255, 255, 255)
     num_rows = 3
     num_columns = 3
+
     for row in range(num_rows):
         for column in range(num_columns):
-            cell_x = column * cell_size
-            cell_y = row * cell_size
+            cell_x = column * cell_size + field_center
+            cell_y = row * cell_size + field_center
             cell_react = pygame.Rect(cell_x, cell_y, cell_size, cell_size)
-            pygame.draw.rect(cell_position, (255, 255, 255), cell_react)
+            pygame.draw.rect(window, field_color, cell_react, width=1)
 
 
 running = True
