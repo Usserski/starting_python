@@ -2,9 +2,8 @@ import pygame
 
 pygame.init()
 
-width = 800
-height = 600
-window = pygame.display.set_mode((width, height))
+WIDTH, HEIGHT = 1000, 800
+window = pygame.display.set_mode((WIDTH, HEIGHT))
 background_color = (192, 168, 132)
 window.fill(background_color)
 pygame.display.set_caption("Kółko krzyżyk")
@@ -14,7 +13,7 @@ def drawning_text():
     font_name = pygame.font.match_font('Bold')
     font_size = 64
     font = pygame.font.Font(font_name, font_size)
-    main_text = " Kółko krzyżyk "
+    main_text = " kółko krzyżyk  "
     text_color = (0, 0, 0)
     text_surface = font.render(main_text, True, text_color)
     text_position = (250, 100)
@@ -44,29 +43,36 @@ def write_symbol(point, rect):
 
 button_rect = (150, 150, 100, 100)
 button_state = "Pusty"
+black = (0, 0, 0)
 
 
-running = True
-while running:
+def main():
+    running = True
+    button_count = 0
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                break
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
         drawning_text()
         drawning_field()
         pygame.display.flip()
 
-        pygame.draw.rect(window, (200, 200, 200), button_rect)
-
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_position = pygame.mouse.get_pos()
-            if write_symbol(mouse_position, button_rect):
-                button_state = "kółko"
+            button_count += 1
+            if button_count % 2 == 0:
+                pygame.draw.circle(window, black, mouse_position, 50)
 
-        if button_state == "kółko":
-            pygame.draw.circle(window, (0, 0, 0), (250, 300), 40)
+            # if button_count % 2 != 0:
+                #pygame.draw.line(window, black, mouse_position, 50)
+               # pygame.draw.line(window, black, mouse_position, 50)
 
-        if button_state == "krzyżyk":
-            pygame.draw.lines(window, (0, 0, 0), (200, 200), 50)
+    pygame.display.flip()
 
-pygame.quit()
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
