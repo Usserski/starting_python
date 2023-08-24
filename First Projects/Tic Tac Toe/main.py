@@ -1,5 +1,5 @@
 import pygame
-
+import pygame.font
 pygame.init()
 
 WIDTH, HEIGHT = 1000, 800
@@ -7,20 +7,25 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 background_color = (192, 168, 132)
 window.fill(background_color)
 pygame.display.set_caption("Kółko krzyżyk")
+black = (0, 0, 0)
+red = (255, 0, 0)
+main_text = "kółko krzyżyk"
+main_text_cord = (250, 100)
+warning_text = " Nacisnij na pole gry"
+warning_text_cord = (250, 700)
 
 
-def drawning_text():
+def drawning_text(main_text, text_position):
     font_name = pygame.font.match_font('Bold')
     font_size = 64
     font = pygame.font.Font(font_name, font_size)
-    main_text = " kółko krzyżyk  "
     text_color = (0, 0, 0)
     text_surface = font.render(main_text, True, text_color)
-    text_position = (250, 100)
     window.blit(text_surface, text_position)
 
 
 def drawning_field():
+
     cell_size = 100
     field_center = 250
     field_color = (255, 255, 255)
@@ -34,42 +39,34 @@ def drawning_field():
             cell_react = pygame.Rect(cell_x, cell_y, cell_size, cell_size)
             pygame.draw.rect(window, field_color, cell_react, width=1)
 
+    return cell_react
 
-def write_symbol(point, rect):
+
+def check_collision(point, rect):
     x, y = point
     rx, ry, height, width = rect
     return rx < x < rx + width and ry < y < ry + height
 
 
-button_rect = (150, 150, 100, 100)
-button_state = "Pusty"
-black = (0, 0, 0)
+def is_mouse_over_area(mouse_pos, area_rect):
+    return area_rect.collidepoint(mouse_pos)
 
 
 def main():
     running = True
-    button_count = 0
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
 
-        drawning_text()
-        drawning_field()
-        pygame.display.flip()
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_position = pygame.mouse.get_pos()
-            button_count += 1
-            if button_count % 2 == 0:
-                pygame.draw.circle(window, black, mouse_position, 50)
-
-            # if button_count % 2 != 0:
-                #pygame.draw.line(window, black, mouse_position, 50)
-               # pygame.draw.line(window, black, mouse_position, 50)
-
-    pygame.display.flip()
+        drawning_text(window, main_text, main_text_cord)
+        cell_react = drawning_field()
+        pygame.display.update()
+        mouse_position = pygame.mouse.get_pos()
+        if is_mouse_over_area(mouse_position, cell_react)
+        drawning_text(window, warning_text, warning_text_cord)
 
     pygame.quit()
 
