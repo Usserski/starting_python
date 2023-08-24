@@ -9,13 +9,15 @@ window.fill(background_color)
 pygame.display.set_caption("Kółko krzyżyk")
 black = (0, 0, 0)
 red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
 main_text = "kółko krzyżyk"
 main_text_cord = (250, 100)
 warning_text = " Nacisnij na pole gry"
 warning_text_cord = (250, 700)
 
 
-def drawning_text(main_text, text_position):
+def drawning_text(surface, main_text, text_position):
     font_name = pygame.font.match_font('Bold')
     font_size = 64
     font = pygame.font.Font(font_name, font_size)
@@ -65,8 +67,10 @@ def main():
         cell_react = drawning_field()
         pygame.display.update()
         mouse_position = pygame.mouse.get_pos()
-        if is_mouse_over_area(mouse_position, cell_react)
-        drawning_text(window, warning_text, warning_text_cord)
+        if is_mouse_over_area(mouse_position, cell_react):
+            pygame.draw.rect(window, green, cell_react, 50)
+        else:
+            pygame.draw.rect(window, black, cell_react, 60)
 
     pygame.quit()
 
