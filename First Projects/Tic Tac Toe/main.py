@@ -61,7 +61,7 @@ class Board:
         self.squares[row][col] = player
         self.marked_sqrs += 1
 
-    def empty_sqrs(self, row, col):
+    def empty_sqr(self, row, col):
         return self.squares[row][col] == 0
 
     def get_empty_sqrs(self):
@@ -94,7 +94,7 @@ class Game:
                          (WIDTH-SQSIZE, HEIGHT), LINE_WIDTH)
 
 
-# poziome
+        # poziome
         pygame.draw.line(window, LINE_COLOR, (0, SQSIZE),
                          (WIDTH, SQSIZE), LINE_WIDTH)
 
@@ -124,7 +124,7 @@ class Game:
     def next_turn(self):
         self.player = self.player % 2 + 1
 
-    def check_win(self, row, col):
+    
 
 
 def main():
@@ -146,7 +146,7 @@ def main():
                     board.mark_sqr(row, col, game.player)
                     game.draw_fig(row, col)
                     game.next_turn()
-                    game.check_win()
+                    
 
         pygame.display.update()
 
