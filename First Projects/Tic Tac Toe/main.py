@@ -37,23 +37,43 @@ class Board:
         self.empty_sqrs = self.squares
         self.marked_sqrs = 0
 
-    def final_state(self):
+    def final_state(self, show=False):
 
         # vertical
         for col in range(COLS):
             if self.squares[0][col] == self.squares[1][col] == self.squares[2][col] != 0:
+                if show:
+                    color = CIRCLE_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
+                    iPos = (col * SQSIZE + SQSIZE // 2, 20)
+                    fPos = (col * SQSIZE + SQSIZE // 2, HEIGHT - 20)
+                    pygame.draw.line(window, color, iPos, fPos, LINE_WIDTH)
                 return self.squares[0][col]
 
         # horizontal
         for row in range(ROWS):
             if self.squares[row][0] == self.squares[row][1] == self.squares[row][2] != 0:
+                if show:
+                    color = CIRCLE_COLOR if self.squares[0][row] == 2 else CROSS_COLOR
+                    iPos = (20, row * SQSIZE + SQSIZE)
+                    fPos = (WIDTH - 20, row * SQSIZE + SQSIZE // 2)
+                    pygame.draw.line(window, color, iPos, fPos, LINE_WIDTH)
                 return self.squares[row][0]
 
         # desc diagonal
             if self.squares[0][0] == self.squares[1][1] == self.squares[2][2] != 0:
+                if show:
+                    color = CIRCLE_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
+                    iPos = (20, 20)
+                    fPos = (WIDTH-20, HEIGHT - 20)
+                    pygame.draw.line(window, color, iPos, fPos, LINE_WIDTH)
                 return self.squares[0][0]
         # asc diagonal
             if self.squares[2][0] == self.squares[1][1] == self.squares[0][2] != 0:
+                if show:
+                    color = CIRCLE_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
+                    iPos = (20, HEIGHT - 20)
+                    fPos = (WIDTH-20, 20)
+                    pygame.draw.line(window, color, iPos, fPos, LINE_WIDTH)
                 return self.squares[2][0]
 
         return 0
@@ -171,6 +191,8 @@ class Game:
         self.next_turn()
 
     def do_lines(self):
+        window.fill(BG_COLOR)
+
         # pionowe
         pygame.draw.line(window, LINE_COLOR, (SQSIZE, 0),
                          (SQSIZE, HEIGHT), LINE_WIDTH)
@@ -208,6 +230,15 @@ class Game:
     def next_turn(self):
         self.player = self.player % 2 + 1
 
+    def change_gamemode(self):
+        self.gamemode = 'ai' if self.gamemode == 'pvp' else 'pvp'
+
+    def isover(self):
+        return self.board.final_state(show=True) != 0 or self.board.isfull()
+
+    def reset(self):
+        self.__init__()
+
 
 def main():
     game = Game()
@@ -222,14 +253,37 @@ def main():
                 running = False
                 pygame.quit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = event.pos
-                row = pos[1] // SQSIZE
-                col = pos[0] // SQSIZE
-                if board.empty_sqr(row, col):
-                    game.make_move(row, col)
+            if event.type == pygame.KEYDOWN:
 
-        if game.gamemode == 'pvp' and game.player == game.player:
+                # g = change gamemode
+                if event.key == pygame.K_g:
+                    game.change_gamemode()
+
+                # r - reset
+                if event.key == pygame.K_r:
+                    game.reset()
+                    board = game.board
+                    ai = game.ai
+
+                # 0 - random
+                if event.key == pygame.K_0:
+                    ai.level = 0
+
+                # 1 - random
+                if event.key == pygame.K_1:
+                    ai.level = 1
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+            row = pos[1] // SQSIZE
+            col = pos[0] // SQSIZE
+            if board.empty_sqr(row, col):
+                game.make_move(row, col)
+
+                if game.isover():
+                    game.running = False
+
+        if game.gamemode == 'pvp' and game.player == ai.player and game.running:
             pygame.display.update()
 
             # ai methods
