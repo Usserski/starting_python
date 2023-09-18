@@ -159,8 +159,8 @@ class Game:
 
         self.board = Board()
         self.ai = AI()
-        self.player = 1
-        self.gamemode = 'ai'  # pvp or ai
+        self.player = 2
+        self.gamemode = 'pvp'  # pvp or ai
         self.running = True
         self.do_lines()
 
@@ -229,7 +229,7 @@ def main():
                 if board.empty_sqr(row, col):
                     game.make_move(row, col)
 
-        if game.gamemode == 'ai' and game.player == ai.player:
+        if game.gamemode == 'pvp' and game.player == game.player:
             pygame.display.update()
 
             # ai methods
