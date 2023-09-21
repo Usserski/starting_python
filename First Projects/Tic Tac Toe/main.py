@@ -65,7 +65,7 @@ class Board:
                     color = CIRCLE_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
                     iPos = (20, 20)
                     fPos = (WIDTH-20, HEIGHT - 20)
-                    pygame.draw.line(window, color, iPos, fPos, LINE_WIDTH)
+                    pygame.draw.line(window, color, iPos, fPos, CROSS_WIDTH)
                 return self.squares[0][0]
         # asc diagonal
             if self.squares[2][0] == self.squares[1][1] == self.squares[0][2] != 0:
@@ -73,7 +73,7 @@ class Board:
                     color = CIRCLE_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
                     iPos = (20, HEIGHT - 20)
                     fPos = (WIDTH-20, 20)
-                    pygame.draw.line(window, color, iPos, fPos, LINE_WIDTH)
+                    pygame.draw.line(window, color, iPos, fPos, CROSS_WIDTH)
                 return self.squares[2][0]
 
         return 0
@@ -290,6 +290,9 @@ def main():
 
             row, col = ai.eval(board)
             game.make_move(row, col)
+
+            if game.isover():
+                game.running = False
 
         pygame.display.update()
 
