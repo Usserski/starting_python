@@ -1,18 +1,45 @@
 import pygame 
 import sys
+
 from DeutschLearn import readIO
 
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1000
+HEIGHT = 800
 
-#class Button():
- #   def __init__(self):
-  #     font = pygame.font.Font(none , 24)
-   #    button_surface = pygame.Surface((150,50))
-    #   text_button = font.render(text , True , (255 , 0 , 0))
-     #  text_rect = text.get_rect(center=(button_surface.get_width()/2, button_surface.get_height()/2))
-      # return button_surface
-       
+class Banner():
+    def __init__(self, text):
+        self.banner_surface = pygame.Surface((WIDTH, 50))  # Szerokość ekranu, wysokość 50
+        self.banner_surface.fill((0, 255, 0))  # Kolor niebieski
+        font = pygame.font.Font(None, 36)
+        self.text_surface = font.render(text, True, (255, 255, 255))  # Biały tekst
+        self.text_rect = self.text_surface.get_rect(center=(WIDTH / 2, 25))  # Pozycja tekstu w banerze
+
+    def draw(self, screen):
+        screen.blit(self.banner_surface, (0, 0))  # Rysowanie banera na górze ekranu
+        screen.blit(self.text_surface, self.text_rect)  # Rysowanie tekstu na banerze
+
+class Button():
+    def __init__(self, x , y , text ):
+        
+        self.button_surface=pygame.Surface((150 ,50))
+        font = pygame.font.Font(None , 50)
+        self.text_button = font.render(text , True , (250 , 0 , 0))
+        self.text_rect = self.text_button.get_rect(center=(self.button_surface.get_width() / 2, self.button_surface.get_height() / 2))
+        self.button_rect = pygame.Rect(x, y, 150, 50)
+        
+     
+     
+    def draw(self, screen , hover=False):
+        if hover:
+            self.button_surface.fill((0,255,0))
+        else:
+            self.button_surface.fill((200 , 200, 200))
+                                 
+                                 
+        self.button_surface.blit(self.text_button, self.text_rect)
+        screen.blit(self.button_surface, self.button_rect.topleft)
+          
+
        
 class Game():
     def __init__(self):
@@ -21,31 +48,31 @@ class Game():
         pygame.display.set_caption("Learning Deutsch")
         self.screen_game = pygame.display.set_mode((WIDTH,HEIGHT))
         self.clock = pygame.time.Clock()
-        self.button_surface=pygame.Surface((150 ,50))
-        self.button_pos = [250 , 250] 
-        font = pygame.font.Font(None , 50)
-        self.text_button = font.render('text' , True , (250 , 0 , 0))
-        self.text_rect = self.text_button.get_rect(center=(self.button_surface.get_width()/2, self.button_surface.get_height()/2))
-        self.button_rect = pygame.Rect(125 , 125, 150 , 50)
+        self.play_button = Button(400 , 400 , 'Play')
+        self.banner = Banner("Witaj w grze. Nacisnij 'Play' aby sprawdzić się ze swoim niemieckim ")  
+     
 
 
 
     def run(self):
         while True:
-            self.button_surface.blit(self.text_button , self.text_rect)
-            self.screen_game.blit(self.button_surface, (self.button_rect.x , self.button_rect.y))
+            self.screen_game.fill('white')
+            hover = self.play_button.button_rect.collidepoint(pygame.mouse.get_pos())
+           
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                    pygame.quit()
                    sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                   if self.button_rect.collidepoint(event.pos):
+                   if self.play_button.button_rect.collidepoint(event.pos):
                       print("Button clicked!")
             
+            self.banner.draw(self.screen_game)
+            self.play_button.draw(self.screen_game , hover)
             pygame.display.update()
             self.clock.tick(60)
-            self.screen_game.fill('white')
+            
 
-
-Game().run()
+if __name__ == "__main__":
+    Game().run()
 
