@@ -8,15 +8,15 @@ WIDTH = 1000
 HEIGHT = 800
 
 class Banner():
-    def __init__(self, text):
-        self.banner_surface = pygame.Surface((WIDTH, 50))  # Szerokość ekranu, wysokość 50
-        self.banner_surface.fill((0, 255, 0))  # Kolor niebieski
+    def __init__(self, text  ):
+        self.main_banner_surface = pygame.Surface((WIDTH, 50))  # Szerokość ekranu, wysokość 50
+        self.main_banner_surface.fill((0, 255, 0))  # Kolor niebieski
         font = pygame.font.Font(None, 36)
         self.text_surface = font.render(text, True, (255, 255, 255))  # Biały tekst
         self.text_rect = self.text_surface.get_rect(center=(WIDTH / 2, 25))  # Pozycja tekstu w banerze
 
-    def draw(self, screen):
-        screen.blit(self.banner_surface, (0, 0))  # Rysowanie banera na górze ekranu
+    def draw(self, screen , x , y):
+        screen.blit(self.main_banner_surface, (x, y))  # Rysowanie banera na górze ekranu
         screen.blit(self.text_surface, self.text_rect)  # Rysowanie tekstu na banerze
 
 class Button():
@@ -49,25 +49,31 @@ class Game():
         self.screen_game = pygame.display.set_mode((WIDTH,HEIGHT))
         self.clock = pygame.time.Clock()
         self.play_button = Button(400 , 400 , 'Play')
+        self.next_button = Button(600 , 400 , 'Next')
         self.banner = Banner("Witaj w grze. Nacisnij 'Play' aby sprawdzić się ze swoim niemieckim ")  
         self.words_data = self.col_data()
         self.random_word = None
+        #self.words = WordBanner( )
         
     def col_data(self):
-        words_data = []
-        with pdfplumber.open('D:\OneDrive\Dokumenty\GitHub\starting_python\Practice Python\LearningDeutsch\baza_slow.pdf') as file:
-            for page in file.pages:
-                tables = page.extract_table()
-                for table in tables:
-                    for row in table:
-                        words_data.append(row)
+          words_data = []
+          sciezka_do_pliku = 'D:\OneDrive\Dokumenty\GitHub\starting_python\Practice Python\LearningDeutsch/baza_slow.pdf'
+          try:
+                with pdfplumber.open(sciezka_do_pliku) as file:
+                    for page in file.pages:
+                        tables = page.extract_table()
+                        for table in tables:
+                            for row in table:
+                                words_data.append(row)
+          except FileNotFoundError:
+                print("Plik PDF nie został znaleziony.")
                          
-    
-        return words_data     
+          return words_data     
             
         
     def randomize_words(self): 
         if self.words_data:
+            
             self.random_word = random.choice(self.words_data)
             
         
@@ -75,17 +81,25 @@ class Game():
         while True:
             self.screen_game.fill('white')
             hover = self.play_button.button_rect.collidepoint(pygame.mouse.get_pos())
-            self.banner.draw(self.screen_game)
+            self.banner.draw(self.screen_game , x=0 , y=0)
             self.play_button.draw(self.screen_game , hover)
            
             for event in pygame.event.get():
+                
                 if event.type == pygame.QUIT:
                    pygame.quit()
                    sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                    if self.play_button.button_rect.collidepoint(event.pos):
-                        self.randomize_words()  # Wybierz losowe słowo
-                        print(f"Wylosowane słowo: {self.random_word}")
+                       self.screen_game.fill('white')
+                       self.randomize_words()
+                       print(self.random_word)
+                        
+                        
+            
+            
+                   
+                        
                       
                       
             pygame.display.update()
