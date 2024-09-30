@@ -7,11 +7,12 @@ HEIGHT = 800
 
 class Banner():
     def __init__(self, text):
-        self.main_banner_surface = pygame.Surface((WIDTH, 50))  # Szerokość ekranu, wysokość 50
+        self.main_banner_surface = pygame.Surface((WIDTH, 70))  # Szerokość ekranu, wysokość 70
         self.main_banner_surface.fill((0, 255, 0))  # Kolor zielony
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.Font(None, 36)  # czcionka i rozmiar tekstu
         self.text_surface = font.render(text, True, (255, 255, 255))  # Biały tekst
-        self.text_rect = self.text_surface.get_rect(center=(WIDTH / 2, 25))  # Pozycja tekstu w banerze
+        self.text_rect = self.text_surface.get_rect(center=(WIDTH / 2, 35))  # Pozycja tekstu w banerze
+
 
     def draw(self, screen, x, y):
         screen.blit(self.main_banner_surface, (x, y))  # Rysowanie banera na górze ekranu
@@ -34,6 +35,34 @@ class Button():
         self.button_surface.blit(self.text_button, self.text_rect)
         screen.blit(self.button_surface, self.button_rect.topleft)
 
+class TextInput():
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = (200, 200, 200)
+        self.text = ''
+        self.font = pygame.font.Font(None, 36)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active  # Przełącz aktywność
+            else:
+                self.active = False
+        if event.type == pygame.KEYDOWN and self.active:
+            if event.key == pygame.K_RETURN:  # Zatwierdź wejście
+                return self.text  # Zwróć tekst, gdy użytkownik naciśnie Enter
+            elif event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]  # Usuwanie ostatniego znaku
+            else:
+                self.text += event.unicode  # Dodawanie znaku do tekstu
+
+    def draw(self, screen):
+        # Rysowanie pola tekstowego
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+        text_surface = self.font.render(self.text, True, (0, 0, 0))
+        screen.blit(text_surface, (self.rect.x + 5, self.rect.y + 5))
+
 class Game():
     def __init__(self):
         pygame.init()
@@ -43,58 +72,84 @@ class Game():
         self.play_button = Button(400, 400, 'Play')
         self.next_button = Button(600, 400, 'Next')
         self.banner = Banner("Witaj w grze. Nacisnij 'Play' aby sprawdzić się ze swoim niemieckim ")
-        self.words_data = self.col_data()
+        self.words = self.col_data()
+        self.pl_words = self.words[1]
+        self.de_words = self.words [0]
         self.random_word = None
-        self.question_banner = None  # Zmienna do pytania
-        self.game_started = False
+        self.score = 0
+        self.font = pygame.font.Font(None, 50)
+        self.game_started = False  # Flaga do śledzenia stanu gry
+        self.text_input = TextInput(400, 500, 300, 50)  # Pole tekstowe do odpowiedzi
+        self.question = None  # Ustaw pytanie
+
+    def display_score(self):
+        score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.words)}", True, (0, 0, 0))
+        self.screen_game.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, HEIGHT // 2))
 
     def col_data(self):
-        words_data = []
+        pl_words = []
+        de_words = []
+        i=1
         file_path = 'D:\\OneDrive\\Dokumenty\\GitHub\\starting_python\\Practice Python\\LearningDeutsch\\baza_inf.txt' 
         with open(file_path, encoding='utf-8') as file:
             for linia in file:
-                pl_word, de_word = linia.strip().split(' - ')
-                words_data.append((pl_word, de_word))
-        return words_data
+                pl, de = linia.strip().split(' - ')
+                pl_words.append((i, pl))
+                de_words.append((i , de))
+                i+=1
+                
+        return  de_words , pl_words
 
     def randomize_words(self):
-        if self.words_data:
-            self.random_word = random.choice(self.words_data)
-            self.question_banner = Banner(f"Podaj tłumaczenie: {self.random_word[0]}")  # Ustaw pytanie
+        if self.words:
+            random_word = random.choice(self.de_words)
+            self.question = Banner(f'Wpisz tłumaczenie: {random_word}')
+        
+            
+           
+
+            
 
     def run(self):
         while True:
             for event in pygame.event.get():
-                self.banner.draw(self.screen_game, 0, 0)
-                hover = self.play_button.button_rect.collidepoint(pygame.mouse.get_pos())
-                self.play_button.draw(self.screen_game, hover)
-                self.screen_game.fill('white')
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
+                self.text_input.handle_event(event)  # Obsługuje zdarzenia dla pola tekstowego
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.play_button.button_rect.collidepoint(event.pos):
-                        
-                        self.randomize_words()  # Losuj słow
-                        self.game_started = True
-                        
-                        
-                self.screen_game.fill('white')
+                    if event.button == 1:  # Lewy przycisk myszy
+                        if self.play_button.button_rect.collidepoint(event.pos):
+                            self.game_started = True  # Rozpocznij grę
+                            self.randomize_words()  # Losuj pierwsze słowo
 
-                if not self.game_started:  # Jeśli gra się nie rozpoczęła, wyświetl przycisk
-                    hover = self.play_button.button_rect.collidepoint(pygame.mouse.get_pos())
-                    self.play_button.draw(self.screen_game, hover)
-                    self.banner.draw(self.screen_game, 0, 0)
-                else:  # Jeśli gra się rozpoczęła, wyświetl baner z pytaniem
-                    self.question_banner.draw(self.screen_game, 0, 60)  # Rysuj baner z pytaniem
-                    self.next_button.draw(self.screen_game , hover)
-                    print(self.words_data)
+                        if self.next_button.button_rect.collidepoint(event.pos):
+                            self.randomize_words()  # Losuj nowe słowo
 
-            
-            
-            pygame.display.flip()  # Odśwież ekran
-            self.clock.tick(60)  # Ustawienie liczby klatek na sekundę
+            self.screen_game.fill('white')
+
+            # Rysowanie elementów w zależności od stanu gry
+            if not self.game_started:
+                self.banner.draw(self.screen_game, 0, 0)
+                self.play_button.draw(self.screen_game, self.play_button.button_rect.collidepoint(pygame.mouse.get_pos()))
+            else:
+                
+                self.question.draw(self.screen_game, 0, 0)  # Rysowanie banera z pytaniem
+                self.display_score()  # Wyświetlanie wyniku
+                self.next_button.draw(self.screen_game, self.next_button.button_rect.collidepoint(pygame.mouse.get_pos()))
+                self.text_input.draw(self.screen_game)  # Rysowanie pola tekstowego
+
+                # Sprawdzanie odpowiedzi po naciśnięciu Enter
+                if self.text_input.active and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    user_input = self.text_input.text
+                    if user_input.lower() == self.random_word[1].lower():  # Sprawdzenie poprawności
+                        self.score += 1
+                    self.text_input.text = ''  # Resetowanie pola tekstowego po sprawdzeniu
+
+            pygame.display.flip()
+            self.clock.tick(60)
 
 if __name__ == "__main__":
     game = Game()
