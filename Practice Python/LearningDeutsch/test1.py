@@ -2,82 +2,97 @@ import pygame
 import sys
 import random
 
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1000
+HEIGHT = 800
 
-class Question:
-    def __init__(self, question, options, answer):
-        self.question = question
-        self.options = options
-        self.answer = answer
+GREEN = (0, 255, 0)
+WHITE = (255, 255, 255)
+GRAY = (200, 200, 200)
+RED = (250, 0, 0)
 
-class QuizGame:
+class Banner():
+    def __init__(self, text):
+        self.main_banner_surface = pygame.Surface((WIDTH, 70))
+        self.main_banner_surface.fill(GREEN)
+        font = pygame.font.Font(None, 36)
+        self.text_surface = font.render(text, True, WHITE)
+        self.text_rect = self.text_surface.get_rect(center=self.main_banner_surface.get_rect().center)
+
+    def draw(self, screen, x, y):
+        screen.blit(self.main_banner_surface, (x, y))
+        screen.blit(self.text_surface, self.text_rect)
+
+class Button():
+    def __init__(self, x, y, text):
+        self.button_surface = pygame.Surface((150, 50))
+        font = pygame.font.Font(None, 50)
+        self.text_button = font.render(text, True, RED)
+        self.text_rect = self.text_button.get_rect(center=(self.button_surface.get_width() / 2, self.button_surface.get_height() / 2))
+        self.button_rect = pygame.Rect(x, y, 150, 50)
+
+    def draw(self, screen, hover=False):
+        if hover:
+            self.button_surface.fill(GREEN)
+        else:
+            self.button_surface.fill(GRAY)
+
+        self.button_surface.blit(self.text_button, self.text_rect)
+        screen.blit(self.button_surface, self.button_rect.topleft)
+
+class TextInput():
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = GRAY
+        self.text = ''
+        self.font = pygame.font.Font(None, 36)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+        if event.type == pygame.KEYDOWN and self.active:
+            if event.key == pygame.K_RETURN:
+                return self.text
+            elif event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]
+            else:
+                self.text += event.unicode
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+        text_surface = self.font.render(self.text, True, (0, 0, 0))
+        screen.blit(text_surface, (self.rect.x + 5, self.rect.y + 5))
+
+class Game():
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("Quiz Game")
+        pygame.display.set_caption("Learning Deutsch")
+        self.screen_game = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(None, 36)
+        self.play_button = Button(400, 400, 'Play')
+        self.banner = Banner("Witaj w grze!")
 
-        self.questions = self.load_questions()
-        self.current_question_index = 0
-        self.score = 0
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-    def load_questions(self):
-        # Przykładowe pytania
-        return [
-            Question("Jakie jest stolicą Polski?", ["Warszawa", "Berlin", "Paryż", "Londyn"], "Warszawa"),
-            Question("Ile to 2 + 2?", ["3", "4", "5", "6"], "4"),
-            Question("Który kontynent jest największy?", ["Afryka", "Azja", "Europa", "Ameryka"], "Azja"),
-        ]
+    def draw(self):
+        self.screen_game.fill((0, 0, 0))  # Czyszczenie ekranu
+        self.banner.draw(self.screen_game, 0, 0)
+        self.play_button.draw(self.screen_game)
+        pygame.display.flip()
 
     def run(self):
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_1:
-                        self.check_answer(0)
-                    elif event.key == pygame.K_2:
-                        self.check_answer(1)
-                    elif event.key == pygame.K_3:
-                        self.check_answer(2)
-                    elif event.key == pygame.K_4:
-                        self.check_answer(3)
-
-            self.screen.fill((255, 255, 255))
-            self.display_question()
-            pygame.display.flip()
+            self.update()
+            self.draw()
             self.clock.tick(60)
 
-    def display_question(self):
-        if self.current_question_index < len(self.questions):
-            question = self.questions[self.current_question_index]
-            question_text = self.font.render(question.question, True, (0, 0, 0))
-            self.screen.blit(question_text, (50, 50))
-
-            for index, option in enumerate(question.options):
-                option_text = self.font.render(f"{index + 1}. {option}", True, (0, 0, 0))
-                self.screen.blit(option_text, (50, 100 + index * 40))
-
-        else:
-            self.display_score()
-
-    def check_answer(self, selected_index):
-        question = self.questions[self.current_question_index]
-        if question.options[selected_index] == question.answer:
-            self.score += 1
-
-        self.current_question_index += 1
-
-    def display_score(self):
-        score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.questions)}", True, (0, 0, 0))
-        self.screen.fill((255, 255, 255))
-        self.screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, HEIGHT // 2))
-
 if __name__ == "__main__":
-    game = QuizGame()
+    game = Game()
     game.run()
