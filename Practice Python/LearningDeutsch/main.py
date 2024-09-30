@@ -90,7 +90,7 @@ class Game():
         pl_words = []
         de_words = []
         i=1
-        file_path = 'D:\\OneDrive\\Dokumenty\\GitHub\\starting_python\\Practice Python\\LearningDeutsch\\baza_inf.txt' 
+        file_path = 'C:\\Users\\user\\Documents\\GitHub\\starting_python\\Practice Python\\LearningDeutsch\\baza_inf.txt'
         with open(file_path, encoding='utf-8') as file:
             for linia in file:
                 pl, de = linia.strip().split(' - ')
@@ -102,8 +102,24 @@ class Game():
 
     def randomize_words(self):
         if self.words:
-            random_word = random.choice(self.de_words)
-            self.question = Banner(f'Wpisz tłumaczenie: {random_word}')
+            random_word = random.choice(self.pl_words)
+            self.question = Banner(f'Wpisz tłumaczenie: {random_word[1]}')
+
+    
+    def checking_answer(self , answer):
+        for index_pl in self.pl_words:
+            if answer == self.pl_words[1]:
+                index_pl = self.pl_words[0]
+        for index_de in self.de_words:
+            if answer == self.de_words[1]:
+                index_de = self.de_words[0]
+                        
+        if index_pl == index_de:   
+            self.score += 1
+            self.text_input.text = ''  # Resetowanie pola tekstowego po sprawdzeniu
+
+        return
+        
         
             
            
@@ -140,13 +156,12 @@ class Game():
                 self.display_score()  # Wyświetlanie wyniku
                 self.next_button.draw(self.screen_game, self.next_button.button_rect.collidepoint(pygame.mouse.get_pos()))
                 self.text_input.draw(self.screen_game)  # Rysowanie pola tekstowego
-
+                
                 # Sprawdzanie odpowiedzi po naciśnięciu Enter
                 if self.text_input.active and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     user_input = self.text_input.text
-                    if user_input.lower() == self.random_word[1].lower():  # Sprawdzenie poprawności
-                        self.score += 1
-                    self.text_input.text = ''  # Resetowanie pola tekstowego po sprawdzeniu
+                    self.checking_answer(user_input)
+                    
 
             pygame.display.flip()
             self.clock.tick(60)
