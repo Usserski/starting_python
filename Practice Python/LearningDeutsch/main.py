@@ -74,17 +74,18 @@ class Game():
         self.banner = Banner("Witaj w grze. Nacisnij 'Play' aby sprawdzić się ze swoim niemieckim ")
         self.words = self.col_data()
         self.pl_words = self.words[1]
-        self.de_words = self.words [0]
+        self.de_words = self.words[0]
         self.random_word = None
         self.score = 0
-        self.font = pygame.font.Font(None, 50)
+        self.font = pygame.font.Font(None, 40)
         self.game_started = False  # Flaga do śledzenia stanu gry
         self.text_input = TextInput(400, 500, 300, 50)  # Pole tekstowe do odpowiedzi
         self.question = None  # Ustaw pytanie
 
     def display_score(self):
-        score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.words)}", True, (0, 0, 0))
-        self.screen_game.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, HEIGHT // 2))
+        
+        score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.de_words)} ", True, (0, 0, 0))
+        self.screen_game.blit(score_text, (WIDTH // 10 - score_text.get_width() // 32, HEIGHT // 10))
 
     def col_data(self):
         pl_words = []
@@ -104,27 +105,19 @@ class Game():
         if self.words:
             random_word = random.choice(self.pl_words)
             self.question = Banner(f'Wpisz tłumaczenie: {random_word[1]}')
+            self.random_word = random_word  # Zapamiętaj losowe słowo
 
-    
-    def checking_answer(self , answer):
-        for index_pl in self.pl_words:
-            if answer == self.pl_words[1]:
-                index_pl = self.pl_words[0]
-        for index_de in self.de_words:
-            if answer == self.de_words[1]:
-                index_de = self.de_words[0]
-                        
-        if index_pl == index_de:   
-            self.score += 1
-            self.text_input.text = ''  # Resetowanie pola tekstowego po sprawdzeniu
-
-        return
-        
-        
-            
-           
-
-            
+    def check_answer(self):
+        if self.random_word:
+            wpisane_tlumaczenie = self.text_input.text.strip()
+            poprawne_tlumaczenie = self.de_words[self.random_word[0] - 1][1]  # Pobierz poprawne tłumaczenie z de_words
+            if wpisane_tlumaczenie.lower() == poprawne_tlumaczenie.lower():
+                self.score += 1
+                print("Poprawne tłumaczenie!")
+            else:
+                print("Niestety, to nie jest poprawne tłumaczenie.")
+            self.text_input.text = ''  # Wyczyść pole tekstowe
+            self.randomize_words()  # Losuj nowe słowo
 
     def run(self):
         while True:
@@ -144,6 +137,10 @@ class Game():
                         if self.next_button.button_rect.collidepoint(event.pos):
                             self.randomize_words()  # Losuj nowe słowo
 
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN and self.game_started:
+                        self.check_answer()  # Sprawdź odpowiedź
+
             self.screen_game.fill('white')
 
             # Rysowanie elementów w zależności od stanu gry
@@ -151,17 +148,11 @@ class Game():
                 self.banner.draw(self.screen_game, 0, 0)
                 self.play_button.draw(self.screen_game, self.play_button.button_rect.collidepoint(pygame.mouse.get_pos()))
             else:
-                
-                self.question.draw(self.screen_game, 0, 0)  # Rysowanie banera z pytaniem
-                self.display_score()  # Wyświetlanie wyniku
+                if self.question:
+                    self.question.draw(self.screen_game, 0, 0)
+                self.display_score()  # Wyświetl wynik
+                self.text_input.draw(self.screen_game)
                 self.next_button.draw(self.screen_game, self.next_button.button_rect.collidepoint(pygame.mouse.get_pos()))
-                self.text_input.draw(self.screen_game)  # Rysowanie pola tekstowego
-                
-                # Sprawdzanie odpowiedzi po naciśnięciu Enter
-                if self.text_input.active and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                    user_input = self.text_input.text
-                    self.checking_answer(user_input)
-                    
 
             pygame.display.flip()
             self.clock.tick(60)
