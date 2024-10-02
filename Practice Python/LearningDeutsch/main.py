@@ -85,7 +85,14 @@ class Game():
     def display_score(self):
         
         score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.de_words)} ", True, (0, 0, 0))
-        self.screen_game.blit(score_text, (WIDTH // 10 - score_text.get_width() // 32, HEIGHT // 10))
+        self.screen_game.blit(score_text, (WIDTH // 50 - score_text.get_width() // 10, HEIGHT // 30))
+        
+    def show_message(self ,message):
+        text = self.font.render(message, True, (0 , 0 , 0 ))
+        text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//3))
+        self.screen_game.blit(text, text_rect)
+        pygame.display.flip()  # Aktualizuje ekran
+        pygame.time.wait(1000)  # Czeka 2 sekundy
 
     def col_data(self):
         pl_words = []
@@ -113,10 +120,10 @@ class Game():
             poprawne_tlumaczenie = self.de_words[self.random_word[0] - 1][1]  # Pobierz poprawne tłumaczenie z de_words
             if wpisane_tlumaczenie.lower() == poprawne_tlumaczenie.lower():
                 self.score += 1
-                print("Poprawne tłumaczenie!")
+                self.show_message("Poprawne tłumaczenie!")
                 self.randomize_words()  # Losuj nowe słowo
             else:
-                print("Niestety, to nie jest poprawne tłumaczenie.")
+                self.show_message("Niestety, to nie jest poprawne tłumaczenie.")
             self.text_input.text = ''  # Wyczyść pole tekstowe
             
 
