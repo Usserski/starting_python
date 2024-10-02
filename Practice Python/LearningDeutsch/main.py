@@ -91,7 +91,7 @@ class Game():
         pl_words = []
         de_words = []
         i=1
-        file_path = 'C:\\Users\\user\\Documents\\GitHub\\starting_python\\Practice Python\\LearningDeutsch\\baza_inf.txt'
+        file_path = 'D:\\OneDrive\\Dokumenty\\GitHub\\starting_python\\Practice Python\\LearningDeutsch\\baza_inf.txt'
         with open(file_path, encoding='utf-8') as file:
             for linia in file:
                 pl, de = linia.strip().split(' - ')
@@ -114,10 +114,11 @@ class Game():
             if wpisane_tlumaczenie.lower() == poprawne_tlumaczenie.lower():
                 self.score += 1
                 print("Poprawne tłumaczenie!")
+                self.randomize_words()  # Losuj nowe słowo
             else:
                 print("Niestety, to nie jest poprawne tłumaczenie.")
             self.text_input.text = ''  # Wyczyść pole tekstowe
-            self.randomize_words()  # Losuj nowe słowo
+            
 
     def run(self):
         while True:
