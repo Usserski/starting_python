@@ -7,10 +7,12 @@ HEIGHT = 800
 
 class Banner():
     def __init__(self, text):
+        banner_color = (0 , 0 , 0) # kolor czarny
+        text_color = (255, 255, 255) # kolor bialy
         self.main_banner_surface = pygame.Surface((WIDTH, 70))  # Szerokość ekranu, wysokość 70
-        self.main_banner_surface.fill((0, 255, 0))  # Kolor zielony
+        self.main_banner_surface.fill(banner_color)  # wypelnienie koloru
         font = pygame.font.Font(None, 36)  # czcionka i rozmiar tekstu
-        self.text_surface = font.render(text, True, (255, 255, 255))  # Biały tekst
+        self.text_surface = font.render(text, True, text_color)  # Biały tekst
         self.text_rect = self.text_surface.get_rect(center=(WIDTH / 2, 35))  # Pozycja tekstu w banerze
 
 
@@ -20,6 +22,8 @@ class Banner():
 
 class Button():
     def __init__(self, x, y, text):
+        self.hover_color = (57 , 202 , 101) # kolor zielony 
+        self.button_color = (0 , 0 , 0) # kolor czarny
         self.button_surface = pygame.Surface((150, 50))
         font = pygame.font.Font(None, 50)
         self.text_button = font.render(text, True, (250, 0, 0))
@@ -28,9 +32,9 @@ class Button():
 
     def draw(self, screen, hover=False):
         if hover:
-            self.button_surface.fill((0, 255, 0))  # Kolor zielony przy najechaniu
+            self.button_surface.fill(self.hover_color) # Kolor zielony przy najechaniu
         else:
-            self.button_surface.fill((200, 200, 200))  # Szary kolor
+            self.button_surface.fill(self.button_color)  # Szary kolor
 
         self.button_surface.blit(self.text_button, self.text_rect)
         screen.blit(self.button_surface, self.button_rect.topleft)
@@ -38,10 +42,14 @@ class Button():
 class TextInput():
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x, y, width, height)
-        self.color = (200, 200, 200)
+        self.color = (0,0,0)
         self.text = ''
         self.font = pygame.font.Font(None, 36)
         self.active = False
+        self.time = pygame.time.Clock() 
+        self.cursor_visible = True
+        self.cursor_timer =  0 
+        
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -50,6 +58,10 @@ class TextInput():
             else:
                 self.active = False
         if event.type == pygame.KEYDOWN and self.active:
+            self.cursor_timer += self.time.get_time()
+            if self.cursor_timer >= 500:
+                self.cursor_visible = not self.cursor_visible
+                self.cursor_timer = 0
             if event.key == pygame.K_RETURN:  # Zatwierdź wejście
                 return self.text  # Zwróć tekst, gdy użytkownik naciśnie Enter
             elif event.key == pygame.K_BACKSPACE:
@@ -58,10 +70,15 @@ class TextInput():
                 self.text += event.unicode  # Dodawanie znaku do tekstu
 
     def draw(self, screen):
-        # Rysowanie pola tekstowego
+        # Rysowanie pola tekstowego  
         pygame.draw.rect(screen, self.color, self.rect, 2)
         text_surface = self.font.render(self.text, True, (0, 0, 0))
-        screen.blit(text_surface, (self.rect.x + 5, self.rect.y + 5))
+        screen.blit(text_surface, (self.rect.x + 2, self.rect.y + 2))
+        
+        if self.cursor_visible and self.active:
+            cursor_x = self.rect.x + self.font.size(self.text)[0] + 2 # Pozycja kursora
+            pygame.draw.line(screen, self.color, (cursor_x, self.rect.y + 5), (cursor_x, self.rect.y + self.rect.height - 5), 2)
+        
 
 class Game():
     def __init__(self):
@@ -81,11 +98,14 @@ class Game():
         self.game_started = False  # Flaga do śledzenia stanu gry
         self.text_input = TextInput(400, 500, 300, 50)  # Pole tekstowe do odpowiedzi
         self.question = None  # Ustaw pytanie
-
-    def display_score(self):
+        self.sample_words = [ ] #lista do przechowywania  duplikatow
         
-        score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.de_words)} ", True, (0, 0, 0))
-        self.screen_game.blit(score_text, (WIDTH // 50 - score_text.get_width() // 10, HEIGHT // 30))
+        
+    def display_score(self):
+        scoreboard_color = (255 , 255 ,255)
+        score_text = self.font.render(f"Twój wynik: {self.score}/{len(self.de_words)} ", True, scoreboard_color)
+        self.screen_game.blit(score_text, (WIDTH / 50 - score_text.get_width() / 10, HEIGHT / 50))
+        
         
     def show_message(self ,message):
         text = self.font.render(message, True, (0 , 0 , 0 ))
@@ -93,6 +113,7 @@ class Game():
         self.screen_game.blit(text, text_rect)
         pygame.display.flip()  # Aktualizuje ekran
         pygame.time.wait(1000)  # Czeka 2 sekundy
+        
 
     def col_data(self):
         pl_words = []
@@ -107,12 +128,21 @@ class Game():
                 i+=1
                 
         return  de_words , pl_words
+    
 
     def randomize_words(self):
         if self.words:
-            random_word = random.choice(self.pl_words)
-            self.question = Banner(f'Wpisz tłumaczenie: {random_word[1]}')
-            self.random_word = random_word  # Zapamiętaj losowe słowo
+            if len(self.pl_words) > 0 :
+                random_word = random.choice(self.pl_words)
+                self.sample_words.append(random_word)
+                self.pl_words.remove(random_word)
+                self.question = Banner(f'Wpisz tłumaczenie: {random_word[1]}')
+                self.random_word = random_word  # Zapamiętaj losowe słowo
+            else:
+                pygame.time.wait(1000) 
+                self.show_message('Udało Ci sie przetłumaczyc wszystkie słowa!')
+                self.game_started = False
+            
 
     def check_answer(self):
         if self.random_word:
@@ -149,7 +179,7 @@ class Game():
                     if event.key == pygame.K_RETURN and self.game_started:
                         self.check_answer()  # Sprawdź odpowiedź
 
-            self.screen_game.fill('white')
+            self.screen_game.fill((26, 105,185))
 
             # Rysowanie elementów w zależności od stanu gry
             if not self.game_started:
