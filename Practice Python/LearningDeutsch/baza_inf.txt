@@ -15,6 +15,42 @@ Przeglądarka internetowa - der Webbrowser
 Programowanie - die Programmierung
 Baza danych - die Datenbank
 Serwer - der Server
-Adres IP - die IP-Adresse
+Adres IP - die IP Adresse
 Zapora sieciowa - die Firewall
 Konto użytkownika - das Benutzerkonto
+ekran - der Bildschirm
+drukarka - der Drucker
+skaner - der Skanner
+pendrive - der USB Stick
+plik - die Datei
+aplikacja - die Anwendung
+połączenie - die Verbindung
+bezpieczeństwo - die Sicherheit
+ustawienia - die Einstellung 
+konfiguracja - die Konfiguration
+wiadomość - die Nachricht
+kamera internetowa - die Webcam
+licencja - die Lizenz
+zapisywać - speichern
+otwierać - öffnen
+zamykać - schließen
+wysyłać - senden
+odbierać - empfangen
+edytować - bearbeiten
+pobierać - herunterladen
+przesyłać na serwer , załadować - hochladen
+drukować - drucken
+skanować - skannen
+kopiować - kopieren
+wklejać , wstawiać - einfügen
+dzielić - teilen
+aktualizować - aktualisieren
+konfigurować - konfigurieren
+instalować - einrichten
+logować się - sich einloggen
+kliknąć - anklicken
+nacisnąć - drücken
+sprawdzić - checken
+włączyć np. komputer - hochfahren , anmachen
+wprowadzić cos do komputera - eingeben
+
