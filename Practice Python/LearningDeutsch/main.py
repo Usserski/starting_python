@@ -118,14 +118,19 @@ class Game():
     def col_data(self):
         pl_words = []
         de_words = []
+        
         i=1
         file_path = 'D:\\OneDrive\\Dokumenty\\GitHub\\starting_python\\Practice Python\\LearningDeutsch\\baza_inf.txt'
         with open(file_path, encoding='utf-8') as file:
             for linia in file:
-                pl, de = linia.strip().split(' - ')
-                pl_words.append((i, pl))
-                de_words.append((i , de))
-                i+=1
+                words = linia.strip().split('-')
+                if len(words) >= 2:  # Sprawdzenie, czy są co najmniej dwa elementy
+                    pl_words.append((i, words[0].strip()))  # Dodajemy strip(), aby usunąć białe znaki
+                    de_words.append((i, words[1].strip()))
+                    i += 1
+                else:
+                    print(f"Zignorowano linię: {linia.strip()}")  # Informacja o ignorowanej linii
+                    print(words)
                 
         return  de_words , pl_words
     
