@@ -38,7 +38,7 @@ Wysyłać - senden
 Odbierać - empfangen
 Edytować - bearbeiten
 Pobierać - herunterladen
-Przesyłać na serwer  - hochladen
+Przesyłać na serwer - hochladen
 Drukować - drucken
 Skanować - skannen
 Kopiować - kopieren
@@ -51,6 +51,5 @@ Logować się - sich einloggen
 Kliknąć - anklicken
 Nacisnąć - drücken
 Sprawdzić - checken
-Włączyć np17:28 14.10.2024 komputer -   anmachen
+Włączyć np komputer - anmachen
 Wprowadzić cos do komputera - eingeben
-
